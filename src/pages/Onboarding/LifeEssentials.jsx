@@ -301,17 +301,19 @@ const LifeEssentials = () => {
             How long does it take you to get to UAIC? (one way)
           </p>
           
-          <Slider
-            value={essentials.commute}
-            onChange={(value) => setEssentials({ ...essentials, commute: value })}
-            min={0}
-            max={120}
-            step={5}
-            unit="minutes"
-            marks={['0', '30', '60', '90', '120']}
-          />
+          <div className="mb-8">
+            <Slider
+              value={essentials.commute}
+              onChange={(value) => setEssentials({ ...essentials, commute: value })}
+              min={0}
+              max={120}
+              step={5}
+              unit="minutes"
+              marks={['0', '30', '60', '90', '120']}
+            />
+          </div>
           
-          <div className="mt-4 p-4 bg-slate-800/50 rounded-lg">
+          <div className="p-4 bg-slate-800/50 rounded-lg">
             <p className="text-sm text-slate-300">
               <span className="text-slate-400">Daily commute time:</span>
               {' '}
