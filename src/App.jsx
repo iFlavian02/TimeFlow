@@ -5,6 +5,9 @@ import { AuthProvider } from './context/AuthContext';
 import Landing from './pages/Landing';
 import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
+import UploadSchedule from './pages/Onboarding/UploadSchedule';
+import ReviewSchedule from './pages/Onboarding/ReviewSchedule';
+import ActivitiesInput from './pages/Onboarding/ActivitiesInput';
 
 function App() {
   return (
@@ -15,7 +18,9 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            {/* Add more routes as we build them */}
+            <Route path="/onboarding/upload-schedule" element={<UploadSchedule />} />
+            <Route path="/onboarding/review-schedule" element={<ReviewSchedule />} />
+            <Route path="/onboarding/activities" element={<ActivitiesInput />} />
           </Routes>
         </Router>
       </AuthProvider>

@@ -70,7 +70,7 @@ const Landing = () => {
   }, []);
   
   const handleGetStarted = () => {
-    navigate('/auth');
+    navigate('/onboarding/upload-schedule');
   };
   
   return (
