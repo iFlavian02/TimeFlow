@@ -8,6 +8,9 @@ import Dashboard from './pages/Dashboard';
 import UploadSchedule from './pages/Onboarding/UploadSchedule';
 import ReviewSchedule from './pages/Onboarding/ReviewSchedule';
 import ActivitiesInput from './pages/Onboarding/ActivitiesInput';
+import StudyPreferences from './pages/Onboarding/StudyPreferences';
+import LifeEssentials from './pages/Onboarding/LifeEssentials';
+import GenerateSchedule from './pages/Onboarding/GenerateSchedule';
 
 function App() {
   return (
@@ -21,6 +24,9 @@ function App() {
             <Route path="/onboarding/upload-schedule" element={<UploadSchedule />} />
             <Route path="/onboarding/review-schedule" element={<ReviewSchedule />} />
             <Route path="/onboarding/activities" element={<ActivitiesInput />} />
+            <Route path="/onboarding/study-preferences" element={<StudyPreferences />} />
+            <Route path="/onboarding/life-essentials" element={<LifeEssentials />} />
+            <Route path="/onboarding/generate" element={<GenerateSchedule />} />
           </Routes>
         </Router>
       </AuthProvider>
