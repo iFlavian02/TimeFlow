@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const Card = ({ children, className = '', hover = false, onClick }) => {
+const Card = ({ children, className = '', hover = false, onClick }) => {
   const hoverStyles = hover ? 'hover:-translate-y-2 hover:shadow-2xl cursor-pointer' : '';
   
   return (
@@ -12,3 +12,6 @@ export const Card = ({ children, className = '', hover = false, onClick }) => {
     </div>
   );
 };
+
+export default Card;
+export { Card };

@@ -9,7 +9,8 @@ const Dropdown = ({
   placeholder = 'Select...',
   error,
   required = false,
-  className = ''
+  className = '',
+  forceUpward = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -27,8 +28,10 @@ const Dropdown = ({
   
   const selectedOption = options.find(opt => opt.value === value);
   
+  console.log('Dropdown forceUpward:', forceUpward, 'isOpen:', isOpen); // DEBUG
+  
   return (
-    <div className={`w-full ${className}`} ref={dropdownRef}>
+    <div className={`w-full ${className}`} ref={dropdownRef} style={{ position: 'relative', zIndex: isOpen ? 10000 : 'auto' }}>
       {label && (
         <label className="block text-sm font-semibold text-slate-300 mb-2">
           {label}
@@ -60,11 +63,18 @@ const Dropdown = ({
         </button>
         
         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-          <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
         </div>
         
         {isOpen && (
-          <div className="absolute z-50 w-full mt-2 bg-slate-800 border-2 border-slate-700 rounded-lg shadow-2xl max-h-60 overflow-y-auto">
+          <div 
+            className={`
+              absolute w-full bg-slate-800 border-2 border-indigo-500 rounded-lg shadow-2xl 
+              max-h-60 overflow-y-auto
+              ${forceUpward ? 'bottom-full mb-2' : 'top-full mt-2'}
+            `}
+            style={{ zIndex: 10001 }}
+          >
             {options.map((option) => (
               <button
                 key={option.value}
@@ -74,10 +84,9 @@ const Dropdown = ({
                   setIsOpen(false);
                 }}
                 className={`
-                  w-full px-4 py-3 text-left
-                  transition-colors
+                  w-full px-4 py-3 text-left transition-colors
                   ${value === option.value 
-                    ? 'bg-indigo-500/20 text-indigo-400' 
+                    ? 'bg-indigo-500/20 text-indigo-400 font-semibold' 
                     : 'text-white hover:bg-slate-700'
                   }
                 `}

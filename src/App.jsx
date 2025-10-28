@@ -11,6 +11,7 @@ import ActivitiesInput from './pages/Onboarding/ActivitiesInput';
 import StudyPreferences from './pages/Onboarding/StudyPreferences';
 import LifeEssentials from './pages/Onboarding/LifeEssentials';
 import GenerateSchedule from './pages/Onboarding/GenerateSchedule';
+import ScheduleView from './pages/ScheduleView';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/onboarding/study-preferences" element={<StudyPreferences />} />
             <Route path="/onboarding/life-essentials" element={<LifeEssentials />} />
             <Route path="/onboarding/generate" element={<GenerateSchedule />} />
+            <Route path="/schedule/view" element={<ScheduleView />} />
           </Routes>
         </Router>
       </AuthProvider>

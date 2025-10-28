@@ -198,7 +198,7 @@ const LifeEssentials = () => {
         </Card>
         
         {/* Meal Times */}
-        <Card className="mb-6">
+        <Card className="mb-16">
           <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
             <UtensilsCrossed className="w-6 h-6 text-amber-400" />
             Meal Times
@@ -259,6 +259,7 @@ const LifeEssentials = () => {
                   }
                 })}
                 options={mealDurations}
+                forceUpward={true}
               />
             </div>
             
@@ -286,6 +287,7 @@ const LifeEssentials = () => {
                   }
                 })}
                 options={mealDurations}
+                forceUpward={true}
               />
             </div>
           </div>
