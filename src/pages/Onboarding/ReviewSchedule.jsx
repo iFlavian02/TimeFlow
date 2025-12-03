@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Plus, Edit2, Trash2, Save, X } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
@@ -8,16 +8,18 @@ import { Input } from '../../components/ui/Input';
 import { Dropdown } from '../../components/ui/Dropdown';
 import { useToast } from '../../hooks/useToast';
 import { ToastContainer } from '../../components/ui/Toast';
+import ScheduleContext from '../../context/ScheduleContext';
 
 const ReviewSchedule = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const [schedule, setSchedule] = useState([]);
+  const { parsedSchedule, setParsedSchedule } = useContext(ScheduleContext);
+  const [classes, setClasses] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     day: '',
@@ -29,33 +31,30 @@ const ReviewSchedule = () => {
     room: '',
     frequency: ''
   });
-  
+
   useEffect(() => {
-    // Load parsed schedule from localStorage
-    const savedSchedule = localStorage.getItem('parsedSchedule');
-    if (savedSchedule) {
-      const parsed = JSON.parse(savedSchedule);
-      setSchedule(parsed.classes || []);
+    if (parsedSchedule && parsedSchedule.classes) {
+      setClasses(parsedSchedule.classes);
     } else {
       toast.warning('No schedule found. Please upload your schedule first.');
       setTimeout(() => navigate('/onboarding/upload-schedule'), 2000);
     }
-  }, [navigate, toast]);
-  
+  }, [parsedSchedule, navigate, toast]);
+
   const handleClassClick = (classData) => {
-    const index = schedule.findIndex(c => 
-      c.day === classData.day && 
-      c.startTime === classData.startTime && 
+    const index = classes.findIndex(c =>
+      c.day === classData.day &&
+      c.startTime === classData.startTime &&
       c.subject === classData.subject
     );
-    
+
     setEditingClass(classData);
     setEditingIndex(index);
     setFormData(classData);
     setIsAddingNew(false);
     setIsEditModalOpen(true);
   };
-  
+
   const handleAddNew = () => {
     setEditingClass(null);
     setEditingIndex(null);
@@ -72,50 +71,49 @@ const ReviewSchedule = () => {
     setIsAddingNew(true);
     setIsEditModalOpen(true);
   };
-  
+
   const handleSave = () => {
     // Validate
     if (!formData.subject || !formData.day || !formData.startTime || !formData.endTime) {
       toast.error('Please fill in all required fields');
       return;
     }
-    
-    let updatedSchedule;
+
+    let updatedClasses;
     if (isAddingNew) {
-      updatedSchedule = [...schedule, formData];
+      updatedClasses = [...classes, formData];
       toast.success('Class added successfully!');
     } else {
-      updatedSchedule = [...schedule];
-      updatedSchedule[editingIndex] = formData;
+      updatedClasses = [...classes];
+      updatedClasses[editingIndex] = formData;
       toast.success('Class updated successfully!');
     }
-    
-    setSchedule(updatedSchedule);
-    localStorage.setItem('parsedSchedule', JSON.stringify({ classes: updatedSchedule }));
+
+    setClasses(updatedClasses);
+    setParsedSchedule({ ...parsedSchedule, classes: updatedClasses });
     setIsEditModalOpen(false);
   };
-  
+
   const handleDelete = () => {
     if (window.confirm('Are you sure you want to delete this class?')) {
-      const updatedSchedule = schedule.filter((_, idx) => idx !== editingIndex);
-      setSchedule(updatedSchedule);
-      localStorage.setItem('parsedSchedule', JSON.stringify({ classes: updatedSchedule }));
+      const updatedClasses = classes.filter((_, idx) => idx !== editingIndex);
+      setClasses(updatedClasses);
+      setParsedSchedule({ ...parsedSchedule, classes: updatedClasses });
       setIsEditModalOpen(false);
       toast.success('Class deleted successfully!');
     }
   };
-  
+
   const handleContinue = () => {
-    if (schedule.length === 0) {
+    if (classes.length === 0) {
       toast.warning('Please add at least one class');
       return;
     }
-    
-    // Save and continue to activities input
-    localStorage.setItem('parsedSchedule', JSON.stringify({ classes: schedule }));
+
+    // The context is already updated, so just navigate
     navigate('/onboarding/activities');
   };
-  
+
   const dayOptions = [
     { value: 'Monday', label: 'Monday' },
     { value: 'Tuesday', label: 'Tuesday' },
@@ -123,24 +121,24 @@ const ReviewSchedule = () => {
     { value: 'Thursday', label: 'Thursday' },
     { value: 'Friday', label: 'Friday' },
   ];
-  
+
   const typeOptions = [
     { value: 'Curs', label: 'Curs (Lecture)' },
     { value: 'Seminar', label: 'Seminar' },
     { value: 'Laborator', label: 'Laborator (Lab)' },
     { value: 'Seminar Facultativ', label: 'Seminar Facultativ (Optional)' },
   ];
-  
+
   const frequencyOptions = [
     { value: '', label: 'Every week' },
     { value: 'Pare', label: 'Even weeks only' },
     { value: 'Impare', label: 'Odd weeks only' },
   ];
-  
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
-      
+
       {/* Header */}
       <div className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -151,11 +149,11 @@ const ReviewSchedule = () => {
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>
           </button>
-          
+
           <div className="text-center">
             <p className="text-sm text-slate-400">Step 2 of 4</p>
           </div>
-          
+
           <button
             className="text-slate-400 hover:text-white transition-colors"
             onClick={() => navigate('/')}
@@ -163,13 +161,13 @@ const ReviewSchedule = () => {
             <span className="text-2xl">×</span>
           </button>
         </div>
-        
+
         {/* Progress Bar */}
         <div className="h-1 bg-slate-800">
           <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 w-2/4 transition-all duration-300" />
         </div>
       </div>
-      
+
       {/* Content */}
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Title Section */}
@@ -181,38 +179,38 @@ const ReviewSchedule = () => {
             Check if everything looks correct. You can edit any class or add new ones.
           </p>
         </div>
-        
+
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-xl p-4">
             <div className="text-3xl font-bold text-white mb-1">
-              {schedule.length}
+              {classes.length}
             </div>
             <div className="text-sm text-slate-400">Total Classes</div>
           </div>
-          
+
           <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-xl p-4">
             <div className="text-3xl font-bold text-white mb-1">
-              {schedule.filter(c => c.type === 'Curs').length}
+              {classes.filter(c => c.type === 'Curs').length}
             </div>
             <div className="text-sm text-slate-400">Lectures</div>
           </div>
-          
+
           <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-xl p-4">
             <div className="text-3xl font-bold text-white mb-1">
-              {schedule.filter(c => c.type === 'Seminar').length}
+              {classes.filter(c => c.type === 'Seminar').length}
             </div>
             <div className="text-sm text-slate-400">Seminars</div>
           </div>
-          
+
           <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-xl p-4">
             <div className="text-3xl font-bold text-white mb-1">
-              {schedule.filter(c => c.type === 'Laborator').length}
+              {classes.filter(c => c.type === 'Laborator').length}
             </div>
             <div className="text-sm text-slate-400">Labs</div>
           </div>
         </div>
-        
+
         {/* Calendar */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -226,9 +224,9 @@ const ReviewSchedule = () => {
               Add Class
             </Button>
           </div>
-          
-          {schedule.length > 0 ? (
-            <Calendar schedule={schedule} onClassClick={handleClassClick} />
+
+          {classes.length > 0 ? (
+            <Calendar schedule={classes} onClassClick={handleClassClick} />
           ) : (
             <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-2xl p-12 text-center">
               <div className="text-6xl mb-4">📅</div>
@@ -240,7 +238,7 @@ const ReviewSchedule = () => {
             </div>
           )}
         </div>
-        
+
         {/* Navigation */}
         <div className="flex justify-between items-center">
           <Button
@@ -251,7 +249,7 @@ const ReviewSchedule = () => {
             <ArrowLeft className="w-5 h-5" />
             Back to Upload
           </Button>
-          
+
           <Button
             variant="primary"
             size="lg"
@@ -262,7 +260,7 @@ const ReviewSchedule = () => {
           </Button>
         </div>
       </div>
-      
+
       {/* Edit Modal */}
       <Modal
         isOpen={isEditModalOpen}
@@ -278,7 +276,7 @@ const ReviewSchedule = () => {
             placeholder="e.g., Matematică - Calcul Diferențial"
             required
           />
-          
+
           <Dropdown
             label="Type"
             value={formData.type}
@@ -286,7 +284,7 @@ const ReviewSchedule = () => {
             options={typeOptions}
             required
           />
-          
+
           <Dropdown
             label="Day"
             value={formData.day}
@@ -294,7 +292,7 @@ const ReviewSchedule = () => {
             options={dayOptions}
             required
           />
-          
+
           <div className="grid grid-cols-2 gap-4">
             <Input
               label="Start Time"
@@ -303,7 +301,7 @@ const ReviewSchedule = () => {
               onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
               required
             />
-            
+
             <Input
               label="End Time"
               type="time"
@@ -312,28 +310,28 @@ const ReviewSchedule = () => {
               required
             />
           </div>
-          
+
           <Input
             label="Professor"
             value={formData.professor}
             onChange={(e) => setFormData({ ...formData, professor: e.target.value })}
             placeholder="e.g., Conf. dr. Arusoaie Andreea"
           />
-          
+
           <Input
             label="Room"
             value={formData.room}
             onChange={(e) => setFormData({ ...formData, room: e.target.value })}
             placeholder="e.g., C2"
           />
-          
+
           <Dropdown
             label="Frequency"
             value={formData.frequency}
             onChange={(value) => setFormData({ ...formData, frequency: value })}
             options={frequencyOptions}
           />
-          
+
           <div className="flex gap-3 pt-4">
             {!isAddingNew && (
               <Button
@@ -345,7 +343,7 @@ const ReviewSchedule = () => {
                 Delete
               </Button>
             )}
-            
+
             <Button
               variant="secondary"
               onClick={() => setIsEditModalOpen(false)}
@@ -354,7 +352,7 @@ const ReviewSchedule = () => {
             >
               Cancel
             </Button>
-            
+
             <Button
               variant="primary"
               onClick={handleSave}
